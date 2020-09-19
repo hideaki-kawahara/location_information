@@ -1,0 +1,105 @@
+<html>
+<head>
+<script type="text/javascript">
+<!--
+function cmanGetOk(argPos){
+
+    // --- 取得した値を出力 ------------------------------------------------------------------------
+    document.getElementById("getLatitude").innerHTML         = argPos.coords.latitude;          // 緯度
+    document.getElementById("getLongitude").innerHTML        = argPos.coords.longitude;         // 経度
+    document.getElementById("getAccuracy").innerHTML         = argPos.coords.accuracy;          // 緯度・経度の誤差
+    document.getElementById("getAltitude").innerHTML         = argPos.coords.altitude;          // 高度
+    document.getElementById("getAltitudeAccuracy").innerHTML = argPos.coords.altitudeAccuracy;  // 高度の誤差
+    document.getElementById("getHeading").innerHTML          = argPos.coords.heading;           // 方角(0:北)
+    document.getElementById("getSpeed").innerHTML            = argPos.coords.speed;             // 速度
+
+    console.log(argPos.coords);
+    for (var i in argPos.coords) {
+//      if (argPos.coords.hasOwnProperty(i)) {
+
+        console.log(i +":"+ argPos.coords[i]);
+        alert(i + ":" + argPos.coords[i]);
+//      }
+    }
+
+
+
+    // ---【デモ用】結果表示制御 -------------------------------------------------------------------
+    cmanGetDisplayCtrl('OK');
+}
+
+
+//==================================================================================================
+//  位置取得 失敗時に実行される
+//==================================================================================================
+function cmanGetErr(argErr){
+    var wErrMsg = "";
+    switch(argErr.code){
+        case 1 : wErrMsg = "位置情報の利用が許可されていません";break;
+        case 2 : wErrMsg = "デバイスの位置が判定できません";break;
+        case 3 : wErrMsg = "タイムアウトしました";break;
+    }
+    if(wErrMsg == ""){wErrMsg = argErr.message;} 
+
+    // --- エラーメッセージ出力 --------------------------------------------------------------------
+    document.getElementById("getErrMag").innerHTML = wErrMsg;
+
+    // ---【デモ用】結果表示制御 -------------------------------------------------------------------
+    cmanGetDisplayCtrl('ERR');
+}
+
+//==================================================================================================
+//  位置取得 実行
+//==================================================================================================
+function cmanPosGet(){
+
+    // --- ブラウザが対応しているかチェック --------------------------------------------------------
+    if (typeof navigator.geolocation === 'undefined') {
+        document.getElementById("getErrMag").innerHTML = 'ブラウザが位置情報取得に対応していません';
+        cmanGetDisplayCtrl('ERR');
+        return false;
+    }
+
+    // --- オプション設定 --------------------------------------------------------------------------
+    var wOptions = {
+        "enableHighAccuracy": true,                       // true : 高精度
+        "timeout": 10000,                                 // タイムアウト : ミリ秒
+        "maximumAge": 0,                                  // データをキャッシュ時間 : ミリ秒
+    };
+
+    // --- 位置取得 --------------------------------------------------------------------------------
+    navigator.geolocation.getCurrentPosition(cmanGetOk,   // 位置取得成功時に実行される関数
+                                             cmanGetErr,  // 位置取得失敗時に実行される関数
+                                             wOptions );  // オプション
+
+    // ---【デモ用】結果表示制御 -------------------------------------------------------------------
+    cmanGetDisplayCtrl('START');
+    return true;
+}
+
+//==================================================================================================
+//  【デモ用】結果表示制御 (デモ画面の表示制御用のため、サンプル動作には関係ありません)
+//==================================================================================================
+function cmanGetDisplayCtrl(argMsg){
+
+}
+// -->
+</script>
+</head>
+<body>
+<input type="button" value="あなたの位置を取得" onClick="cmanPosGet();">
+		<table class="tmTable" style="width:100%;margin-bottom:10px;">
+		<tbody>
+			<tr><th colspan="2">情報</th><th>取得値</th><th>単位</th></tr>
+			<tr><th rowspan="3">位置</th><td>緯度</td><td class="kekkaB" id="getLatitude"></td><td>度</td></tr>
+			<tr><td>経度</td><td class="kekkaB" id="getLongitude"></td><td>度</td></tr>
+			<tr><td>誤差</td><td class="kekkaB" id="getAccuracy"></td><td>m</td></tr>
+			<tr><th rowspan="2">高さ</th><td>高度</td><td class="kekkaB" id="getAltitude"></td><td>m</td></tr>
+			<tr><td>誤差</td><td class="kekkaB" id="getAltitudeAccuracy"></td><td>m</td></tr>
+			<tr><th>向き</th><td>方角</td><td class="kekkaB" id="getHeading"></td><td>度</td></tr>
+			<tr><th>移動</th><td>速度</td><td class="kekkaB" id="getSpeed"></td><td>m/s</td></tr>
+		</tbody>
+		</table>
+</body>
+</html>
+
